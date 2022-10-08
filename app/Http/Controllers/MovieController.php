@@ -54,9 +54,27 @@ class MovieController extends Controller
         return view('movie.load_movie', compact('movie_list'));
     }
 
-    public function showMovie()
+    public function showMovie(Request $request)
     {
-        return view('movie.show_movie');
+        //validate request data
+        $request->validate([
+            'id' => 'required',
+        ]);
+
+        if(Auth::user()->subscription_type == 'basic'){
+            $movie =  Movie::find($request->id);
+
+            $now = date('Y-m-d H:i:s');
+
+            //check movie in the valid rent period
+            if(($now >= $movie->rent_period_from) && ($now <= $movie->rent_period_to)){
+                return view('movie.show_movie');
+            }else{
+                return ['status' => 'error', 'msg' => 'Movie not in valid time period'];
+            }
+        }else{
+            return view('movie.show_movie');
+        }
     }
 
     public function import()
@@ -100,6 +118,7 @@ class MovieController extends Controller
     {
         try {
 
+            //check user is basic
             if (Auth::user()->subscription_type != 'basic') {
                 return ['status' => 'error', 'msg' => 'Only basic user can be rent movie'];
             }
@@ -109,12 +128,21 @@ class MovieController extends Controller
                 'id' => 'required',
             ]);
 
-            $rent_movie = new RentMovie();
-            $rent_movie->user_id = Auth::user()->id;
-            $rent_movie->movie_id = $request->id;
-            $rent_movie->save();
+            $movie =  Movie::find($request->id);
 
-            return ['status' => 'success', 'msg' => 'Rent movie successfully'];
+            $now = date('Y-m-d H:i:s');
+
+            //check movie in the valid rent period
+            if(($now >= $movie->rent_period_from) && ($now <= $movie->rent_period_to)){
+                $rent_movie = new RentMovie();
+                $rent_movie->user_id = Auth::user()->id;
+                $rent_movie->movie_id = $request->id;
+                $rent_movie->save();
+                return ['status' => 'success', 'msg' => 'Rent movie successfully'];
+            }else{
+                return ['status' => 'error', 'msg' => 'Movie not in valid time period'];
+            }
+
 
         } catch (\Exception $exception) {
 
@@ -179,11 +207,11 @@ class MovieController extends Controller
     {
         //validate request data
         $request->validate([
-            'id' => 'required',
-            'tag' => 'required',
-            'plan_type' => 'required',
+            'id' => 'required|integer',
+            'tag' => 'required|string',
+            'plan_type' => 'required|string',
             'rent_period' => 'required',
-            'rent_price' => 'required',
+            'rent_price' => 'required|regex:/^\d+(\.\d{1,2})?$/',
         ]);
 
         try {

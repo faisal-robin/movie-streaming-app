@@ -26,7 +26,7 @@ Route::group(['middleware' => 'auth'], function () {
     // movies route
     Route::group(['as' => 'movies.','prefix' => 'movies/'], function () {
         Route::get('/','MovieController@index')->name('index');
-        Route::get('/show-movie','MovieController@showMovie')->name('show-movie');
+        Route::post('/show-movie','MovieController@showMovie')->name('show-movie');
         Route::post('/edit','MovieController@edit')->name('edit');
         Route::post('/update','MovieController@update')->name('update');
         Route::post('/destroy','MovieController@destroy')->name('delete');

@@ -25,9 +25,6 @@
                         <div class="col-2">
                             <button onclick="loadData()" class="btn btn-info form-control" type="button">Search</button>
                         </div>
-                        {{--                    <div class="col-4">--}}
-                        {{--                        <button onclick="loadData()" type="button" class="btn btn-info">Load More</button>--}}
-                        {{--                    </div>--}}
                     </div>
                 </div>
             </div>
@@ -88,6 +85,26 @@
                 success: function (data, textStatus, jqXHR) {
                     $('div.content-wrapper').unblock();
                     $(".load-movie-data").html(data);
+                }
+            });
+        }
+
+        //show movie
+        function showMovie(id) {
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                method: "POST",
+                url: "{{route('movies.show-movie')}}",
+                data: {id},
+                success: function (data, textStatus, jqXHR) {
+                    if (data.status == 'error') {
+                        Swal.fire(data.msg)
+                    } else {
+                        $('.container-fluid').html(data);
+                    }
+
                 }
             });
         }

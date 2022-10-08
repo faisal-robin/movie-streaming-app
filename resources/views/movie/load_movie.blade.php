@@ -21,7 +21,7 @@
 
                          --}}
                     @if((Auth::user()->subscription_type == 'basic' && count($movie->rents) && $valid ) || Auth::user()->subscription_type == 'premium' || Auth::user()->user_type == 'admin')
-                            <a title="Show" href="{{url('/movies/show-movie')}}" style="cursor: pointer;font-size: 22px" class="text-green"><i class="fa fa-eye"></i></a>
+                            <a title="Show" onclick="showMovie('{{$movie->id}}')" style="cursor: pointer;font-size: 22px" class="text-green"><i class="fa fa-eye"></i></a>
                     @endif
 
                     {{--check rent price and period set or not--}}
