@@ -17,7 +17,7 @@
     </div>
     <div class="col-6">
         <label>Rent Period :</label>
-        <input required="" type="text" class="form-control date_range" name="rent_period" id="rent_period" placeholder="Rent Period" value="{{$movie_info->rent_period_from}} - {{$movie_info->rent_period_to}}">
+        <input autocomplete="off" required="" type="text" class="form-control date_range" name="rent_period" id="rent_period" placeholder="Rent Period" value="{{ $movie_info->rent_period_from ? $movie_info->rent_period_from.' - '.$movie_info->rent_period_to : ''}}">
     </div>
 
 </div>
@@ -37,12 +37,23 @@
     </div>
 </div>
 <script>
-    $('.date_range').daterangepicker({
-        timePicker: true,
-        startDate: moment().startOf('hour'),
-        endDate: moment().startOf('hour').add(32, 'hour'),
-        locale: {
-            format: 'Y-M-DD HH:mm:ss'
-        }
+    $(function() {
+        $('input[name="rent_period"]').daterangepicker({
+            timePicker: true,
+            startDate: moment().startOf('hour'),
+            endDate: moment().startOf('hour').add(32, 'hour'),
+            autoUpdateInput: false,
+            locale: {
+                cancelLabel: 'Clear'
+            }
+        });
+
+        $('input[name="rent_period"]').on('apply.daterangepicker', function(ev, picker) {
+            $(this).val(picker.startDate.format('Y-M-DD HH:mm:ss') + ' - ' + picker.endDate.format('Y-M-DD HH:mm:ss'));
+        });
+
+        $('input[name="rent_period"]').on('cancel.daterangepicker', function(ev, picker) {
+            $(this).val('');
+        });
     });
 </script>
